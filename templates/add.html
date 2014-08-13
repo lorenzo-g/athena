@@ -1,0 +1,65 @@
+<ion-pane>
+  <ion-header-bar align-title="left" class="bar bar-header bar-positive">
+	<a href="#/">
+	<button class="button icon-left ion-chevron-left button-clear button-white">
+	</button></a>
+	<h1 class="title">Add an episode</h1>
+  </ion-header-bar>
+    
+  <ion-content class="content">
+
+	<div class="add-view">
+        <label class="item item-input">
+            <span class="input-label">date</span>
+            <input id="attackDate" type="date" placeholder="Tap to expand" />
+        </label>
+        <label class="item item-input">
+            <span class="input-label">time</span>
+            <input id="attackTime" type="time" placeholder="Tap to expand" />
+        </label>
+        <form name="pain" ng-controller="addController as addCtrl" ng-submit="addCtrl.submitAtt()" >
+            <div class="item item-divider">
+                Characteristics of pain
+            </div>
+            
+            <ion-checkbox ng-model="unilateral">Unilateral location</ion-checkbox>
+            <ion-checkbox ng-model="pulsating">Pulsating quality</ion-checkbox>
+            <ion-checkbox ng-model="severity">Severe intensity</ion-checkbox>
+            <ion-checkbox ng-model="routine">Avoidance of routine activity</ion-checkbox>
+            
+            <div class="item item-divider">
+                Accompanying symptoms
+            </div>
+            
+            <ion-checkbox ng-model="nausea">Nausea and/or vomiting</ion-checkbox>
+            <ion-checkbox ng-model="phono">Intolerance to sounds</ion-checkbox>
+            <ion-checkbox ng-model="photo">Intolerance to light</ion-checkbox>
+            
+            <div class="item item-divider">
+                Preceding/accompanying symptoms
+            </div>
+            
+            <ion-checkbox ng-model="visual">Visual disturbances</ion-checkbox>
+            <ion-checkbox ng-model="sensor">Sensory disturbances</ion-checkbox>
+            <ion-checkbox ng-model="speech">Language disturbances</ion-checkbox>
+            <ion-checkbox ng-model="motor">Motor disturbances</ion-checkbox>
+            
+            <div class="item item-divider">
+                Other optional informations
+            </div>
+            
+            <ion-checkbox ng-model="less4h">Lasted less than 4hr</ion-checkbox>
+            <ion-checkbox ng-model="short">Lasted seconds to few minutes</ion-checkbox>
+            <ion-checkbox ng-model="redeye">Lacrimation and/or red eye</ion-checkbox>
+                
+            
+            <input type="submit" class="button button-block button-positive" value="Submit" />
+            
+            
+        </form>
+        
+            
+	</div>
+
+  </ion-content>
+</ion-pane>
