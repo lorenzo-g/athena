@@ -3,7 +3,7 @@
     "installs_allowed_from": [
         "*"
     ],
-    "version": "0.1b",
+    "version": "0.2",
     "name": "Athena",
     "pkgName": "com.ionicframework.starter",
     "description": "Athena is a free, open-source Headache diary written for firefox OS. It's crafted on the criteria of the International Classification of Headache Disorders (ICHD-3 beta) to discriminate between migraine and tension-type headaches. It's meant to improve medical anamnesis and to make things easier to both physicians and patients.",

@@ -92,17 +92,24 @@ app.controller('addController', ['$scope', function($scope) {
     
   this.submitAtt = function(){
     var eventDate = document.getElementById("attackDate").value;
-    var eventTime = document.getElementById("attackTime").value;
-    eventDate += " ";
-    eventDate += eventTime;
-    var attack = {unilateral: $scope.unilateral, pulsating: $scope.pulsating, severity: $scope.severity,
-                 routine: $scope.routine, nausea: $scope.nausea, phonophobia:  $scope.phono, photo: $scope.photo,
-                 visual: $scope.visual, sensor: $scope.sensor, speech: $scope.speech, motor: $scope.motor,
-                 less4h: $scope.less4h, short: $scope.short, redeye: $scope.redeye};
-    localStorage.setItem(eventDate, JSON.stringify(attack));
-    var stored = localStorage.getItem(eventDate);
-    test = JSON.parse(stored);
-    alert("The attack is now in your database!");
+      
+    if (eventDate == ""){
+        alert("Please select a date for this attack, than tap again to store.");
+    } else {
+      
+        var eventTime = document.getElementById("attackTime").value;
+        eventDate += " ";
+        eventDate += eventTime;
+        var attack = {unilateral: $scope.unilateral, pulsating: $scope.pulsating, severity: $scope.severity,
+                     routine: $scope.routine, nausea: $scope.nausea, phonophobia:  $scope.phono, photo: $scope.photo,
+                     visual: $scope.visual, sensor: $scope.sensor, speech: $scope.speech, motor: $scope.motor,
+                     less4h: $scope.less4h, short: $scope.short, redeye: $scope.redeye};
+        localStorage.setItem(eventDate, JSON.stringify(attack));
+        var stored = localStorage.getItem(eventDate);
+        test = JSON.parse(stored);
+        alert("The attack is now in your database!");
+    };
+      
   };
     
   $scope.unilateral = false;
@@ -128,7 +135,7 @@ app.controller('addController', ['$scope', function($scope) {
 app.controller('showController', function() {
     
     var description = "";  
-    val = localStorage.getItem("2014-08-13");
+ 
 
     for (i=0; i<=localStorage.length-1; i++)  
 			{  
@@ -234,7 +241,8 @@ app.controller('showController', function() {
 app.controller('statsController', function() {
     
     var stReport = "";
-    val = localStorage.getItem("2014-08-13");
+    var firstDate = moment();
+
     
     var auraCount = 0;
     var visualCount = 0;
@@ -250,9 +258,17 @@ app.controller('statsController', function() {
     
     for (i=0; i<=localStorage.length-1; i++)  
 			{  
-				key = localStorage.key(i);  
+                key = localStorage.key(i);  
 				val = localStorage.getItem(key);
                 translated = JSON.parse(val);
+                var isdate = moment(key).isValid();
+                if (isdate === true){                
+                    isBefore = moment(key).isBefore(firstDate);
+                    if (isBefore === true){
+                        var firstDate = key;
+                    };
+                };
+
                 
                 var criteriumBforM = true;
                 var criteriumBforT = true;
@@ -299,7 +315,7 @@ app.controller('statsController', function() {
                 if (translated.short === true) {
                     shortCount += 1;
                     criteriumBforM = false;
-                    criteriumBfort = false;
+                    criteriumBforT = false;
                 } else {
                     if (translated.less4h === true) {
                        criteriumBforM = false;
@@ -358,19 +374,48 @@ app.controller('statsController', function() {
 			} 
     
     
-    stReport += '<div class="item item-divider">Overall counts</div>';
+    stReport += '<div class="item item-divider">Overall counts';
+    var a = moment();
+    var diffInDays = a.diff(firstDate, 'days');
+    if( diffInDays >= 90 ){
+        stReport += ' (pm)';
+    };
+    stReport += '</div>';
     stReport += '<a class="item">Total count: ';
     stReport += totalCount;
+    if( diffInDays >= 90 ){
+        stReport += ' (';
+        stReport += Math.round((totalCount/diffInDays) * 30);
+        stReport += ')';
+    };
     stReport += '</a>';
     if (migraineLike >= 1) {
         stReport += '<a class="item">Migraine-like episodes: '
         stReport += migraineLike;
+        if( diffInDays >= 90 ){
+            stReport += ' (';
+            stReport += Math.round((migraineLike/diffInDays) * 30);
+            stReport += ')';
+    };
         stReport += '</a>';
     };
     if (tensionLike >= 1) {
         stReport += '<a class="item">Tension-type-like episodes: '
         stReport += tensionLike;
+        if( diffInDays >= 90 ){
+            stReport += ' (';
+            stReport += Math.round((tensionLike/diffInDays) * 30);
+            stReport += ')';
+    };
         stReport += '</a>';
+    };
+    
+    if (migraineLike != 0 && tensionLike != 0) {
+
+        stReport +='<div text-align="center">'
+        stReport +='<svg id="donutChart" align="center" width="400" height="220"></svg>'
+        stReport +='</div>'
+
     };
     
     if (auraCount != 0) {
@@ -420,5 +465,32 @@ app.controller('statsController', function() {
     
     var statsdiv = document.getElementById('stats-id');
     statsdiv.innerHTML = stReport;
+
+    if (migraineLike != 0 && tensionLike != 0) {
+        var cScale = d3.scale.linear().domain([0, 100]).range([0, 2 * Math.PI]);
+        
+
+        
+        data = [[0,(migraineLike/totalCount)*100,"#086A87"], [(migraineLike/totalCount)*100,
+               ((migraineLike + tensionLike)/totalCount)*100,"#2ECCFA"], [((migraineLike + tensionLike)/totalCount)*100,100,"#CEECF5"]]
+
+
+        var vis = d3.select("#donutChart");
+        var arc = d3.svg.arc()
+        .innerRadius(0)
+        .outerRadius(100)
+        .startAngle(function(d){return cScale(d[0]);})
+        .endAngle(function(d){return cScale(d[1]);});
+
+        vis.selectAll("path")
+        .data(data)
+        .enter()
+        .append("path")
+        .attr("d", arc)
+        .style("fill", function(d){return d[2];})
+        .attr("transform", "translate(160,110)");
+
+
+    };
 
 });
